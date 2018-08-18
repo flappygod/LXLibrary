@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:Android="http://schemas.android.com/apk/res/android">
+
+    <item><shape>
+            <gradient Android:angle="270" Android:endColor="@color/lxlibrary_white_tran" Android:startColor="@color/lxlibrary_white_tran" />
+            <corners Android:radius="@dimen/d_10" />
+            <stroke Android:width="1px" Android:color="@color/lxlibrary_divider" />
+        </shape></item>
+
+</selector>

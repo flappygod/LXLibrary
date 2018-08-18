@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="lxlibrary_reminder">温馨提醒</string>
+    <string name="lxlibrary_cancel">取消</string>
+    <string name="lxlibrary_confirm">确定</string>
+    <string name="lxlibrary_nopermission">没有获取到必要权限</string>
+    <string name="lxlibrary_load_more">继续拖动查看更多</string>
+    <string name="lxlibrary_loading">加载中...</string>
+    <string name="lxlibrary_load_nomore">没有更多了</string>
+    <string name="lxlibrary_load_pullup">上拉加载更多</string>
+    <string name="lxlibrary_load_none">什么也没有</string>
+    <string name="lxlibrary_load_error">加载失败</string>
+</resources>

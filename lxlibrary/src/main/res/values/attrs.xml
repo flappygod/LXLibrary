@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PickerView">
+        <attr name="isLoop" format="boolean"  />
+    </declare-styleable>
+
+
+
+
+    <declare-styleable name="RatingBar">
+        <!--星星大小-->
+        <attr format="dimension" name="lxlibrary_starSize"/>
+        <!--星星个数-->
+        <attr format="integer" name="lxlibrary_starCount"/>
+        <!--星星空图-->
+        <attr format="reference" name="lxlibrary_starEmpty"/>
+        <!--星星满图-->
+        <attr format="reference" name="lxlibrary_starFill"/>
+        <!--星星半图-->
+        <attr format="reference" name="lxlibrary_starHalf"/>
+        <!--是否可以点击评分-->
+        <attr format="boolean" name="lxlibrary_clickable"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="RangeSeekBar">
+        <attr name="lxlibrary_max" format="float"/>
+        <attr name="lxlibrary_min" format="float"/>
+        <attr name="lxlibrary_reserve" format="float"/>
+        <attr name="lxlibrary_cells" format="integer"/>
+        <attr name="lxlibrary_lineColorSelected" format="color"/>
+        <attr name="lxlibrary_lineColorEdge" format="color"/>
+        <attr name="lxlibrary_seekBarResId" format="reference"/>
+    </declare-styleable>
+
+
+</resources>

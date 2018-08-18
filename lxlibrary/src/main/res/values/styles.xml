@@ -1,0 +1,13 @@
+<resources>
+
+    <style name="lxlibrary_dialog_custom" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <!-- 除去title -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 浮在屏幕上 位于中心 -->
+        <!-- <item name="android:backgroundDimEnabled">false</item> -->
+        <!-- 背景变黑 -->
+    </style>
+</resources>

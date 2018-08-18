@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="@dimen/d_260"
+        android:layout_height="wrap_content"
+        android:background="@drawable/lxlibrary_corner_white_tran"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lxlibrary_dialog_custom_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/d_45"
+            android:gravity="center"
+            android:text="标题"
+            android:paddingLeft="@dimen/d_10"
+            android:paddingRight="@dimen/d_10"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:textColor="@color/lxlibrary_black"
+            android:textSize="@dimen/s_17" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/lxlibrary_divider" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/d_100">
+
+            <TextView
+                android:id="@+id/lxlibrary_dialog_custom_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/d_50"
+                android:text="消息内容"
+                android:paddingLeft="@dimen/d_10"
+                android:paddingRight="@dimen/d_10"
+                android:textColor="@color/lxlibrary_black_light"
+                android:textSize="@dimen/s_17" />
+
+        </ScrollView>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="@dimen/d_5"
+            android:layout_marginRight="@dimen/d_5"
+            android:background="@color/lxlibrary_divider" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/lxlibrary_dialog_custom_confrim"
+                android:layout_width="0dip"
+                android:layout_height="@dimen/d_40"
+                android:layout_margin="@dimen/d_5"
+                android:layout_weight="1"
+                android:textSize="@dimen/s_15"
+                android:background="@android:color/transparent"
+                android:text="@string/lxlibrary_confirm"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/lxlibrary_black" />
+
+            <ImageView
+                android:layout_width="1px"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="@dimen/d_10"
+                android:background="@color/lxlibrary_divider" />
+
+            <Button
+                android:id="@+id/lxlibrary_dialog_custom_cancel"
+                android:layout_width="0dip"
+                android:layout_height="@dimen/d_40"
+                android:layout_margin="@dimen/d_5"
+                android:textSize="@dimen/s_15"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:text="@string/lxlibrary_cancel"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/lxlibrary_black" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="@dimen/d_80"
+        android:layout_height="@dimen/d_80"
+        android:background="@drawable/lxlibrary_corner_black_tran"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/d_10">
+
+        <ProgressBar
+            style="@style/Base.Widget.AppCompat.ProgressBar"
+            android:id="@+id/lxlibrary_dialog_prgress_bar"
+            android:layout_width="@dimen/d_35"
+            android:layout_height="@dimen/d_35"
+            android:background="@android:color/transparent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lxlibrary_dialog_progress_text"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/d_20"
+                android:layout_marginTop="@dimen/d_5"
+                android:gravity="center"
+                android:minWidth="@dimen/d_65"
+                android:singleLine="true"
+                android:text="@string/lxlibrary_loading"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/s_14" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

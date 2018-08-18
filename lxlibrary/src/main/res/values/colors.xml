@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--白色-->
+    <color name="lxlibrary_white_tran">#EEffffff</color>
+    <!-- app全局的默认颜色 -->
+    <color name="lxlibrary_divider">#e0e0e0</color>
+    <!-- app全局的默认颜色 -->
+    <color name="lxlibrary_black">#343434</color>
+    <!-- app全局的默认颜色 -->
+    <color name="lxlibrary_black_light">#555555</color>
+
+
+</resources>
