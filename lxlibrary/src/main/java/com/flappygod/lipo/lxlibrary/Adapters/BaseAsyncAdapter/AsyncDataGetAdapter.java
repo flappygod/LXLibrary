@@ -28,8 +28,8 @@ public abstract  class AsyncDataGetAdapter<T> extends BaseDatagetAdapter<T> {
      *****************/
     public synchronized boolean startDataThread() {
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return false;
@@ -45,8 +45,8 @@ public abstract  class AsyncDataGetAdapter<T> extends BaseDatagetAdapter<T> {
                 Message msg = new Message();
                 msg.what = ADDITEMS;
                 msg.obj = data;
-                myHandler.sendMessage(msg);
-                THREADBUSY = false;
+                dataHandler.sendMessage(msg);
+                ThreadBusy = false;
             }
 
             @Override
@@ -54,8 +54,8 @@ public abstract  class AsyncDataGetAdapter<T> extends BaseDatagetAdapter<T> {
                 Message msg = new Message();
                 msg.what = THREADERROR;
                 msg.obj = e;
-                myHandler.sendMessage(msg);
-                THREADBUSY = false;
+                dataHandler.sendMessage(msg);
+                ThreadBusy = false;
             }
         });
         return true;

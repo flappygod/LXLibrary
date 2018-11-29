@@ -19,28 +19,39 @@ import java.util.List;
 public abstract class BaseExpandbleGroupPageAdapter<T> extends
         BaseExpandableListAdapter {
 
+
+    // 线程添加的消息
+    protected final int ADDITEMS = 0;
+    // 线程错误的消息
+    protected final int THREADERROR = 1;
+
+
     //加载监听
     protected BaseExpandbleGroupPageListener<T> mbaseListener;
-    //列表
-    private ExpandableListView listView;
+    // 存储的listData
+    public List<T> ListData;
+    // hadler
+    protected Handler dataHandler;
+    // 线程是否忙碌的标志
+    protected boolean ThreadBusy = false;
+
 
     // 每次获取数据的大小
     protected int size;
     // 当前属于第几页 默认是第一页
     protected int page = 1;
-    // 存储的listData
-    public List<T> ListData;
-
-    // hadler
-    protected Handler myHandler;
-    // 线程是否忙碌的标志
-    protected boolean THREADBUSY = false;
-    // 线程添加的消息
-    protected final int ADDITEMS = 0;
-    // 线程错误的消息
-    protected final int THREADERROR = 1;
     // 设置最大的page为负一，表示不限制最大页数，直到拿不到数据
     private int maxpage = -1;
+
+
+    // 用于当前是否忙碌的hanlder
+    protected Handler busyHandler;
+    //是否忙碌
+    protected boolean Busy = false;
+
+
+    //列表
+    private ExpandableListView listView;
 
 
     /***************
@@ -59,13 +70,75 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
      * @param size    分页的大小
      * @param maxpage 分页的最大页数
      */
-    public BaseExpandbleGroupPageAdapter( int size, int maxpage) {
+    public BaseExpandbleGroupPageAdapter(int size, int maxpage) {
         super();
         ListData = new ArrayList<T>();
         this.size = size;
         this.maxpage = maxpage;
         handlerCreate();
     }
+
+
+    //判断当前是否忙碌
+    public boolean isBusy() {
+        return Busy;
+    }
+
+    /*****************************
+     * 设置正在滑动，延迟加载
+     */
+    public void setBusy(boolean flag) {
+
+        //如果为空则创建handler
+        if (busyHandler == null) {
+            busyHandler = new DHandler(this, false);
+        }
+
+        //先清空为零的信息
+        busyHandler.removeMessages(0);
+
+        if (flag == true) {
+            //当前非常忙碌
+            Busy = true;
+            //然后创建消息，500毫秒后执行为不忙碌
+            Message m = busyHandler.obtainMessage(0);
+            //500毫秒后执行
+            busyHandler.sendMessageDelayed(m, 500);
+        }
+        //如果当前的状态是false
+        else {
+            //当前非常忙碌
+            Busy = false;
+            //然后立即刷新页面
+            BaseExpandbleGroupPageAdapter.this.notifyDataSetChanged();
+        }
+    }
+
+    /***********
+     * handler
+     */
+    static class DHandler extends Handler {
+        //弱引用
+        private WeakReference<BaseExpandbleGroupPageAdapter> weakAdapter;
+        //下一个状态
+        private boolean nextFlag;
+
+        DHandler(BaseExpandbleGroupPageAdapter adapter, boolean nextFlag) {
+            this.weakAdapter = new WeakReference<BaseExpandbleGroupPageAdapter>(adapter);
+            this.nextFlag = nextFlag;
+        }
+
+        public void handleMessage(Message msg) {
+            BaseExpandbleGroupPageAdapter adapter = weakAdapter.get();
+            if (adapter != null) {
+                //不再忙碌的时候就执行刷新操作
+                if (nextFlag == false) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
 
     /***************
      * 设置最大页数
@@ -150,7 +223,7 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
                     mbaseListener.ThreadError(new Exception(
                             "no error message   response"));
                 }
-                adapter.THREADBUSY = false;
+                adapter.ThreadBusy = false;
 
             }
             if (msg.what == adapter.ADDITEMS) {
@@ -169,18 +242,18 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
                     // 如果为负数，代表不做限制
                     if (adapter.maxpage < 0) {
                         // 可以继续加载下一层了
-                        adapter.THREADBUSY = false;
+                        adapter.ThreadBusy = false;
                         if (mbaseListener != null)
                             mbaseListener.PageLoaded(list, adapter.page - 1);
                     } // 如果有最大页数的限制的话
                     else if (adapter.page <= adapter.maxpage) {
                         // 可以继续加载下一层了
-                        adapter.THREADBUSY = false;
+                        adapter.ThreadBusy = false;
                         if (mbaseListener != null)
                             mbaseListener.PageLoaded(list, adapter.page - 1);
                     } else {
                         // 加载完成了
-                        adapter.THREADBUSY = true;
+                        adapter.ThreadBusy = true;
                         if (mbaseListener != null) {
                             mbaseListener.PageLoaded(list, adapter.page - 1);
                             mbaseListener.PageEnd();
@@ -211,7 +284,7 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
 
     //创建handler
     private void handlerCreate() {
-        myHandler = new DataHandler(this);
+        dataHandler = new DataHandler(this);
     }
 
     /*****************
@@ -219,8 +292,8 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
      *****************/
     protected synchronized boolean getNextItems() {
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return false;
@@ -240,17 +313,17 @@ public abstract class BaseExpandbleGroupPageAdapter<T> extends
                     Message msg = new Message();
                     msg.what = ADDITEMS;
                     msg.obj = list;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 } catch (Exception e) {
                     Message msg = new Message();
                     msg.what = THREADERROR;
                     msg.obj = e;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 }
 
             }
         }.start();
-        return  true;
+        return true;
     }
 
     /*****************************

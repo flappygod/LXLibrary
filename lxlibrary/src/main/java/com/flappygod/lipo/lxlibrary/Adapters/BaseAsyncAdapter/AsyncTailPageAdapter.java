@@ -41,8 +41,8 @@ public abstract class AsyncTailPageAdapter<T> extends BaseTailPageAdapter<T> {
     public synchronized boolean getNextItems() {
 
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
         else
             // 如果线程忙碌返回false
             return false;
@@ -57,7 +57,7 @@ public abstract class AsyncTailPageAdapter<T> extends BaseTailPageAdapter<T> {
                 Message msg = new Message();
                 msg.what = ADDITEMS;
                 msg.obj = data;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
 
             @Override
@@ -65,7 +65,7 @@ public abstract class AsyncTailPageAdapter<T> extends BaseTailPageAdapter<T> {
                 Message msg = new Message();
                 msg.what = THREADERROR;
                 msg.obj = e;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
         });
         return true;

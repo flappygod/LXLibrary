@@ -20,22 +20,37 @@ import java.util.List;
 public abstract class BaseExpandbleTailPageAdapter<T> extends
         BaseExpandableListAdapter {
 
-    //分页的大小
-    private int pageSize;
-    //监听
-    public BaseExpandbleTailPageListener<T> tailPageListener;
-    //列表
-    private ExpandableListView listView;
-    // 存储的listData
-    public List<BaseGroupTailModel<T>> ListData;
-    // hadler
-    private Handler myHandler;
-    // 线程是否忙碌的标志
-    private boolean THREADBUSY = false;
+
     // 线程添加的消息
     private final int ADDITEMS = 0;
     // 线程错误的消息
     private final int THREADERROR = 1;
+
+
+    //监听
+    public BaseExpandbleTailPageListener<T> tailPageListener;
+    // 存储的listData
+    public List<BaseGroupTailModel<T>> ListData;
+    // hadler
+    private Handler dataHandler;
+    // 线程是否忙碌的标志
+    private boolean ThreadBusy = false;
+
+
+
+    //分页的大小
+    private int pageSize;
+
+
+
+    // 用于当前是否忙碌的hanlder
+    protected Handler busyHandler;
+    //是否忙碌
+    protected boolean Busy = false;
+
+
+    //列表
+    private ExpandableListView listView;
 
 
     /********
@@ -48,6 +63,68 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
         this.pageSize = size;
         handlerCreate();
     }
+
+
+    //判断当前是否忙碌
+    public boolean isBusy() {
+        return Busy;
+    }
+
+    /*****************************
+     * 设置正在滑动，延迟加载
+     */
+    public void setBusy(boolean flag) {
+
+        //如果为空则创建handler
+        if (busyHandler == null) {
+            busyHandler = new DHandler(this, false);
+        }
+
+        //先清空为零的信息
+        busyHandler.removeMessages(0);
+
+        if (flag == true) {
+            //当前非常忙碌
+            Busy = true;
+            //然后创建消息，500毫秒后执行为不忙碌
+            Message m = busyHandler.obtainMessage(0);
+            //500毫秒后执行
+            busyHandler.sendMessageDelayed(m, 500);
+        }
+        //如果当前的状态是false
+        else {
+            //当前非常忙碌
+            Busy = false;
+            //然后立即刷新页面
+            BaseExpandbleTailPageAdapter.this.notifyDataSetChanged();
+        }
+    }
+
+    /***********
+     * handler
+     */
+    static class DHandler extends Handler {
+        //弱引用
+        private WeakReference<BaseExpandbleTailPageAdapter> weakAdapter;
+        //下一个状态
+        private boolean nextFlag;
+
+        DHandler(BaseExpandbleTailPageAdapter adapter, boolean nextFlag) {
+            this.weakAdapter = new WeakReference<BaseExpandbleTailPageAdapter>(adapter);
+            this.nextFlag = nextFlag;
+        }
+
+        public void handleMessage(Message msg) {
+            BaseExpandbleTailPageAdapter adapter = weakAdapter.get();
+            if (adapter != null) {
+                //不再忙碌的时候就执行刷新操作
+                if (nextFlag == false) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
 
     /*******
      * 设置刷新列表
@@ -77,7 +154,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
      */
     public boolean addGroupToList(BaseGroupTailModel model) {
         //添加到当前列表
-        if (model != null&&THREADBUSY == false) {
+        if (model != null && ThreadBusy == false) {
             ListData.add(model);
             return true;
         }
@@ -149,7 +226,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     tailPageListener.ThreadError(model, new Exception(
                             "no error message  response"));
                 }
-                adapter.THREADBUSY = false;
+                adapter.ThreadBusy = false;
             }
             //添加items
             if (msg.what == adapter.ADDITEMS) {
@@ -168,7 +245,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     // 如果为负数，代表不做限制
                     if (model.getMaxPage() < 0) {
                         // 可以继续加载下一层了
-                        adapter.THREADBUSY = false;
+                        adapter.ThreadBusy = false;
                         if (tailPageListener != null) {
                             tailPageListener.PageLoaded(list, model, model.getPage() - 1);
                         }
@@ -176,7 +253,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     // 如果有最大页数的限制的话，还没有达到最大页码
                     else if (model.getPage() <= model.getMaxPage()) {
                         // 可以继续加载下一层了
-                        adapter.THREADBUSY = false;
+                        adapter.ThreadBusy = false;
                         // 页码加载完成
                         if (tailPageListener != null) {
                             tailPageListener.PageLoaded(list, model, model.getPage() - 1);
@@ -185,7 +262,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     //达到了最大页码
                     else {
                         // 加载完成了
-                        adapter.THREADBUSY = false;
+                        adapter.ThreadBusy = false;
                         if (tailPageListener != null) {
                             tailPageListener.PageLoaded(list, model, model.getPage() - 1);
                             tailPageListener.PageEnd(model);
@@ -199,7 +276,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     //展开所有
                     adapter.ExpandAll();
                     //false
-                    adapter.THREADBUSY = false;
+                    adapter.ThreadBusy = false;
                     // 数据完成了
                     if (tailPageListener != null) {
                         tailPageListener.PageLoaded(list, model, model.getPage());
@@ -219,7 +296,7 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
      * 创建handler
      */
     private void handlerCreate() {
-        myHandler = new DataHandler(this);
+        dataHandler = new DataHandler(this);
     }
 
     /*****************
@@ -229,8 +306,8 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
      */
     private synchronized void getNextItems(final BaseGroupTailModel groupModel) {
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return;
@@ -250,12 +327,12 @@ public abstract class BaseExpandbleTailPageAdapter<T> extends
                     Message msg = new Message();
                     msg.what = ADDITEMS;
                     msg.obj = list;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 } catch (Exception e) {
                     Message msg = new Message();
                     msg.what = THREADERROR;
                     msg.obj = e;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 }
             }
         }.start();

@@ -6,7 +6,6 @@ import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
 
 import java.lang.ref.WeakReference;
@@ -24,22 +23,31 @@ import java.util.List;
 
 public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
 
-    // 数据获取的监听
-    protected BaseDatagetListener<T> dataListener;
-    // 存储的listData
-    protected List<T> ListData;
-    // hadler
-    protected Handler myHandler;
-    // 线程是否忙碌的标志
-    protected boolean THREADBUSY = false;
     // 线程添加的消息
     protected final static int ADDITEMS = 0;
     // 线程错误的消息
     protected final static int THREADERROR = 1;
+
+
+
+    // 数据获取的监听
+    protected BaseDatagetListener<T> dataListener;
+    // 存储的listData
+    protected List<T> ListData;
+    // 用于数据下载的Handler
+    protected Handler dataHandler;
+    // 线程是否忙碌的标志
+    protected boolean ThreadBusy = false;
+
+
+
+
+    // 用于当前是否忙碌的hanlder
+    protected Handler busyHandler;
     //是否忙碌
-    private boolean BUSY = false;
-    //是否忙碌
-    private boolean nowBUSY = false;
+    protected boolean Busy = false;
+
+
 
     public BaseDatagetAdapter(Context context) {
         super();
@@ -47,37 +55,62 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
         handlerCreate();
     }
 
+    //判断当前是否忙碌
+    public boolean isBusy() {
+        return Busy;
+    }
+
     /*****************************
-     * 优化性能，当busy的时候就不再加载，这个可以再滑动的时候动态设置
+     * 设置正在滑动，延迟加载
      */
-    public void setBusy(final Boolean b) {
-        nowBUSY = b;
-        if (b) {
-            BUSY = b;
-            return;
+    public void setBusy(boolean  flag) {
+
+        //如果为空则创建handler
+        if(busyHandler==null) {
+            busyHandler = new DHandler(this, false);
         }
-        Handler handler = new BaseDatagetAdapter.DHandler(this, b);
-        Message m = handler.obtainMessage(0);
-        handler.sendMessageDelayed(m, 500);
+
+        //先清空为零的信息
+        busyHandler.removeMessages(0);
+
+        if(flag==true){
+            //当前非常忙碌
+            Busy = true;
+            //然后创建消息，500毫秒后执行为不忙碌
+            Message m = busyHandler.obtainMessage(0);
+            //500毫秒后执行
+            busyHandler.sendMessageDelayed(m, 500);
+        }
+        //如果当前的状态是false
+        else{
+            //当前非常忙碌
+            Busy = false;
+            //然后立即刷新页面
+            BaseDatagetAdapter.this.notifyDataSetChanged();
+        }
     }
 
     /***********
      * handler
      */
     static class DHandler extends Handler {
-        private WeakReference<BaseDatagetAdapter> weakReferenceadapter;
-        private boolean b;
+        //弱引用
+        private WeakReference<BaseDatagetAdapter> weakAdapter;
+        //下一个状态
+        private boolean nextFlag;
 
-        DHandler(BaseDatagetAdapter adapter, boolean b) {
-            this.weakReferenceadapter = new WeakReference<BaseDatagetAdapter>(adapter);
-            this.b = b;
+        DHandler(BaseDatagetAdapter adapter, boolean nextFlag) {
+            this.weakAdapter = new WeakReference<BaseDatagetAdapter>(adapter);
+            this.nextFlag = nextFlag;
         }
 
         public void handleMessage(Message msg) {
-            BaseDatagetAdapter adapter = weakReferenceadapter.get();
-            if (adapter != null && !adapter.nowBUSY) {
-                adapter.BUSY = b;
-                adapter.notifyDataSetChanged();
+            BaseDatagetAdapter adapter = weakAdapter.get();
+            if (adapter != null ) {
+                //不再忙碌的时候就执行刷新操作
+                if(nextFlag==false) {
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
@@ -127,11 +160,10 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
                 }
                 //回调不为空但是异常为空，这种情况应该几乎没有
                 else if (listener != null) {
-                    listener.ThreadError(new Exception(
-                            "no error message  response"));
+                    listener.ThreadError(new Exception("No error message  response"));
                 }
                 //适配器状态更改
-                adapter.THREADBUSY = false;
+                adapter.ThreadBusy = false;
             }
             if (msg.what == ADDITEMS) {
                 //获取到数据
@@ -140,9 +172,7 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
                 adapter.ListData.clear();
                 //添加所有数据
                 adapter.ListData.addAll(list);
-                /*for (int s = 0; s < list.size(); s++) {
-                    adapter.ListData.add(list.get(s));
-                }*/
+                //刷新页面
                 adapter.notifyDataSetChanged();
                 // 数据完成了
                 if (listener != null) {
@@ -154,7 +184,7 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
 
     //创建handler
     private void handlerCreate() {
-        myHandler = new DataHandler(this);
+        dataHandler = new DataHandler(this);
     }
 
     /*****************
@@ -163,8 +193,8 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
     public synchronized boolean startDataThread() {
 
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return false;
@@ -183,12 +213,12 @@ public abstract class BaseDatagetAdapter<T> extends BaseAdapter {
                     Message msg = new Message();
                     msg.what = ADDITEMS;
                     msg.obj = list;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 } catch (Exception e) {
                     Message msg = new Message();
                     msg.what = THREADERROR;
                     msg.obj = e;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 }
             }
         }.start();

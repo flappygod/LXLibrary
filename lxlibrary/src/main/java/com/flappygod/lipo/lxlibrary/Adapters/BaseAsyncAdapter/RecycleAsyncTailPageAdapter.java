@@ -58,7 +58,7 @@ public abstract class RecycleAsyncTailPageAdapter<VH extends RecyclerView.ViewHo
                 Message msg = new Message();
                 msg.what = ADDITEMS;
                 msg.obj = data;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
 
             @Override
@@ -66,7 +66,7 @@ public abstract class RecycleAsyncTailPageAdapter<VH extends RecyclerView.ViewHo
                 Message msg = new Message();
                 msg.what = THREADERROR;
                 msg.obj = e;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
         });
         return true;

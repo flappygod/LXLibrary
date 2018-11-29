@@ -22,8 +22,8 @@ public abstract class AsyncExpandbleDatagetAdapter<T> extends BaseExpandbleDatag
      *****************/
     public synchronized boolean startDataThread() {
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return false;
@@ -39,7 +39,7 @@ public abstract class AsyncExpandbleDatagetAdapter<T> extends BaseExpandbleDatag
                 Message msg = new Message();
                 msg.what = ADDITEMS;
                 msg.obj = data;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
 
             @Override
@@ -47,7 +47,7 @@ public abstract class AsyncExpandbleDatagetAdapter<T> extends BaseExpandbleDatag
                 Message msg = new Message();
                 msg.what = THREADERROR;
                 msg.obj = e;
-                myHandler.sendMessage(msg);
+                dataHandler.sendMessage(msg);
             }
         });
         return true;

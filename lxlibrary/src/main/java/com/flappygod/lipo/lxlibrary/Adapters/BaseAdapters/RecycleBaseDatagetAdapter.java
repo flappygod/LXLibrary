@@ -1,10 +1,8 @@
 package com.flappygod.lipo.lxlibrary.Adapters.BaseAdapters;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
 
 
 import java.lang.ref.WeakReference;
@@ -18,22 +16,27 @@ import java.util.List;
 public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHolder, T> extends RecyclerView.Adapter<VH> {
 
 
+    // 线程添加的消息
+    protected final static int ADDITEMS = 0;
+    // 线程错误的消息
+    protected final static int THREADERROR = 1;
+
+
     // 数据获取的监听
     protected BaseDatagetListener<T> dataListener;
     // 存储的listData
     protected List<T> ListData;
     // hadler
-    protected Handler myHandler;
+    protected Handler dataHandler;
     // 线程是否忙碌的标志
-    protected boolean THREADBUSY = false;
-    // 线程添加的消息
-    protected final static int ADDITEMS = 0;
-    // 线程错误的消息
-    protected final static int THREADERROR = 1;
+    protected boolean ThreadBusy = false;
+
+
+    // 用于当前是否忙碌的hanlder
+    protected Handler busyHandler;
     //是否忙碌
-    private boolean BUSY = false;
-    //是否忙碌
-    private boolean nowBUSY = false;
+    protected boolean Busy = false;
+
 
     public RecycleBaseDatagetAdapter() {
         super();
@@ -41,37 +44,62 @@ public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHold
         handlerCreate();
     }
 
+    //判断当前是否忙碌
+    public boolean isBusy() {
+        return Busy;
+    }
+
     /*****************************
-     * 优化性能，当busy的时候就不再加载，这个可以再滑动的时候动态设置
+     * 设置正在滑动，延迟加载
      */
-    public void setBusy(final Boolean b) {
-        nowBUSY = b;
-        if (b) {
-            BUSY = b;
-            return;
+    public void setBusy(boolean flag) {
+
+        //如果为空则创建handler
+        if (busyHandler == null) {
+            busyHandler = new DHandler(this, false);
         }
-        Handler handler = new RecycleBaseDatagetAdapter.DHandler(this, b);
-        Message m = handler.obtainMessage(0);
-        handler.sendMessageDelayed(m, 500);
+
+        //先清空为零的信息
+        busyHandler.removeMessages(0);
+
+        if (flag == true) {
+            //当前非常忙碌
+            Busy = true;
+            //然后创建消息，500毫秒后执行为不忙碌
+            Message m = busyHandler.obtainMessage(0);
+            //500毫秒后执行
+            busyHandler.sendMessageDelayed(m, 500);
+        }
+        //如果当前的状态是false
+        else {
+            //当前非常忙碌
+            Busy = false;
+            //然后立即刷新页面
+            RecycleBaseDatagetAdapter.this.notifyDataSetChanged();
+        }
     }
 
     /***********
      * handler
      */
     static class DHandler extends Handler {
-        private WeakReference<RecycleBaseDatagetAdapter> weakReferenceadapter;
-        private boolean b;
+        //弱引用
+        private WeakReference<RecycleBaseDatagetAdapter> weakAdapter;
+        //下一个状态
+        private boolean nextFlag;
 
-        DHandler(RecycleBaseDatagetAdapter adapter, boolean b) {
-            this.weakReferenceadapter = new WeakReference<RecycleBaseDatagetAdapter>(adapter);
-            this.b = b;
+        DHandler(RecycleBaseDatagetAdapter adapter, boolean nextFlag) {
+            this.weakAdapter = new WeakReference<RecycleBaseDatagetAdapter>(adapter);
+            this.nextFlag = nextFlag;
         }
 
         public void handleMessage(Message msg) {
-            RecycleBaseDatagetAdapter adapter = weakReferenceadapter.get();
-            if (adapter != null && !adapter.nowBUSY) {
-                adapter.BUSY = b;
-                adapter.notifyDataSetChanged();
+            RecycleBaseDatagetAdapter adapter = weakAdapter.get();
+            if (adapter != null) {
+                //不再忙碌的时候就执行刷新操作
+                if (nextFlag == false) {
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
@@ -124,7 +152,7 @@ public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHold
                             "no error message  response"));
                 }
                 //适配器状态更改
-                adapter.THREADBUSY = false;
+                adapter.ThreadBusy = false;
             }
             if (msg.what == ADDITEMS) {
                 //获取到数据
@@ -145,7 +173,7 @@ public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHold
 
     //创建handler
     private void handlerCreate() {
-        myHandler = new DataHandler(this);
+        dataHandler = new DataHandler(this);
     }
 
     /*****************
@@ -154,8 +182,8 @@ public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHold
     public synchronized boolean startDataThread() {
 
         // 如果线程不忙碌，那么就把它置为忙碌
-        if (!THREADBUSY)
-            THREADBUSY = true;
+        if (!ThreadBusy)
+            ThreadBusy = true;
             // 如果线程忙碌
         else
             return false;
@@ -174,12 +202,12 @@ public abstract class RecycleBaseDatagetAdapter<VH extends RecyclerView.ViewHold
                     Message msg = new Message();
                     msg.what = ADDITEMS;
                     msg.obj = list;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 } catch (Exception e) {
                     Message msg = new Message();
                     msg.what = THREADERROR;
                     msg.obj = e;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 }
             }
         }.start();

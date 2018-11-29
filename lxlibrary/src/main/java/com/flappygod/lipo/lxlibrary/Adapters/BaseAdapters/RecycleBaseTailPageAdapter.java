@@ -14,21 +14,36 @@ import java.util.List;
 
 public abstract class RecycleBaseTailPageAdapter<VH extends RecyclerView.ViewHolder, T> extends RecyclerView.Adapter<VH>{
 
-    protected BaseTailPageListener<T> tailPageListener;
-    // 每次获取数据的大小
-    protected int size;
-    // 当前属于第几页 默认是第一页
-    protected int page = 1;
-    // 存储的listData
-    protected List<T> ListData;
-    // hadler
-    protected Handler myHandler;
-    // 线程是否忙碌的标志
-    protected boolean THREADBUSY = false;
+
+
     // 线程添加的消息
     protected final static int ADDITEMS = 0;
     // 线程错误的消息
     protected final static int THREADERROR = 1;
+
+
+    //数据监听
+    protected BaseTailPageListener<T> tailPageListener;
+    // 存储的listData
+    protected List<T> ListData;
+    // hadler
+    protected Handler dataHandler;
+    // 线程是否忙碌的标志
+    protected boolean THREADBUSY = false;
+
+
+
+
+    // 用于当前是否忙碌的hanlder
+    protected Handler busyHandler;
+    //是否忙碌
+    protected boolean Busy = false;
+
+
+    // 每次获取数据的大小
+    protected int size;
+    // 当前属于第几页 默认是第一页
+    protected int page = 1;
     // 设置最大的page为负一，表示不限制最大页数，直到拿不到数据
     private int maxpage = -1;
 
@@ -57,6 +72,67 @@ public abstract class RecycleBaseTailPageAdapter<VH extends RecyclerView.ViewHol
         this.size = size;
         this.maxpage = maxpage;
         handlerCreate();
+    }
+
+
+    //判断当前是否忙碌
+    public boolean isBusy() {
+        return Busy;
+    }
+
+    /*****************************
+     * 设置正在滑动，延迟加载
+     */
+    public void setBusy(boolean flag) {
+
+        //如果为空则创建handler
+        if (busyHandler == null) {
+            busyHandler = new DHandler(this, false);
+        }
+
+        //先清空为零的信息
+        busyHandler.removeMessages(0);
+
+        if (flag == true) {
+            //当前非常忙碌
+            Busy = true;
+            //然后创建消息，500毫秒后执行为不忙碌
+            Message m = busyHandler.obtainMessage(0);
+            //500毫秒后执行
+            busyHandler.sendMessageDelayed(m, 500);
+        }
+        //如果当前的状态是false
+        else {
+            //当前非常忙碌
+            Busy = false;
+            //然后立即刷新页面
+            RecycleBaseTailPageAdapter.this.notifyDataSetChanged();
+        }
+    }
+
+    /***********
+     * handler
+     */
+    static class DHandler extends Handler {
+        //弱引用
+        private WeakReference<RecycleBaseTailPageAdapter> weakAdapter;
+        //下一个状态
+        private boolean nextFlag;
+
+        DHandler(RecycleBaseTailPageAdapter adapter, boolean nextFlag) {
+            this.weakAdapter = new WeakReference<RecycleBaseTailPageAdapter>(adapter);
+            this.nextFlag = nextFlag;
+        }
+
+        public void handleMessage(Message msg) {
+            RecycleBaseTailPageAdapter adapter = weakAdapter.get();
+            if (adapter != null) {
+                //不再忙碌的时候就执行刷新操作
+                if (nextFlag == false) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 
 
@@ -170,7 +246,7 @@ public abstract class RecycleBaseTailPageAdapter<VH extends RecyclerView.ViewHol
     }
 
     private void handlerCreate() {
-        myHandler = new DataHandler<T>(this);
+        dataHandler = new DataHandler<T>(this);
     }
 
     /*****************
@@ -211,12 +287,12 @@ public abstract class RecycleBaseTailPageAdapter<VH extends RecyclerView.ViewHol
                     Message msg = new Message();
                     msg.what = ADDITEMS;
                     msg.obj = list;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 } catch (Exception e) {
                     Message msg = new Message();
                     msg.what = THREADERROR;
                     msg.obj = e;
-                    myHandler.sendMessage(msg);
+                    dataHandler.sendMessage(msg);
                 }
             }
         }.start();
