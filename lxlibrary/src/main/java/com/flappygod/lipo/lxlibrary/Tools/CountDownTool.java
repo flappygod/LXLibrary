@@ -5,7 +5,9 @@ import android.os.Message;
 import android.widget.Button;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,100 +18,145 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CountDownTool {
 
-	private ConcurrentHashMap<Button, Timer> timers = new ConcurrentHashMap<Button, Timer>();
 
-	/**************
-	 * 清理掉所有打开的线程
-	 */
-	public void clear(){
-		Iterator<Button> it1 = timers.keySet().iterator();
-		while(it1.hasNext()){
-            Button key = it1.next();
-            timers.get(key).cancel();
+    //计时器
+    private List<BtnHandler> countModels = new ArrayList<>();
+    //计数文本格式
+    private String fromat;
+
+    //构建
+    public CountDownTool() {
+        this.fromat = "TT秒";
+    }
+
+    //构建
+    public CountDownTool(String fo) {
+        if (fo.contains("TT")) {
+            this.fromat = fo;
+        } else {
+            this.fromat = "TT秒";
         }
-		timers.clear();
-		timers=null;
-	}
-	
-	
-	public synchronized void setVerifBtnCantClick(final Button btn, int time) {
-		// 如果正在
-		if (timers.containsKey(btn)) {
-			Timer itmer = timers.get(btn);
-			itmer.cancel();
-			timers.remove(btn);
-		}
-		btn.setClickable(false);
-		final Timer timer = new Timer(true);
-		final Handler handleVerif = new BtnHandler(btn, timer, timers);
-		timer.schedule(new LTimerTask(time, handleVerif), 1000, 1000);
-		timers.put(btn, timer);
-	}
+    }
 
-	/********************
-	 * 使用弱引用优化后的handler
-	 * 
-	 * @author lijunlin
-	 * 
-	 ********************/
-	static class BtnHandler extends Handler {
+    /**************
+     * 清理掉所有打开的线程
+     */
+    public void clear() {
+        synchronized (countModels) {
+            for (int s = 0; s < countModels.size(); s++) {
+                Button button = countModels.get(s).safebtn.get();
+                //设置可点击
+                if (button != null) {
+                    button.setEnabled(true);
+                }
+                //取消timer
+                countModels.get(s).timer.cancel();
+            }
+            countModels = new ArrayList<>();
+        }
+    }
 
-		private WeakReference<Button> safebtn;
-		private WeakReference<Timer> safetimer;
-		private WeakReference<ConcurrentHashMap<Button, Timer>> timers;
 
-		BtnHandler(Button btn, Timer timer,
-				   ConcurrentHashMap<Button, Timer> timers) {
-			this.safebtn = new WeakReference<Button>(btn);
-			this.safetimer = new WeakReference<Timer>(timer);
-			this.timers = new WeakReference<ConcurrentHashMap<Button, Timer>>(
-					timers);
-		}
+    /************
+     *
+     * @param btn   按钮
+     * @param time  时间
+     * @param endStr 结束显示的字符串
+     */
+    public synchronized void setBtnCountDown(Button btn, int time, String endStr) {
 
-		public void handleMessage(Message msg) {
-			int timeCount = (Integer) msg.obj;
-			Button btn = safebtn.get();
-			if (btn != null) {
-				btn.setText(timeCount + "秒");
-				if (timeCount <= 0) {
-					btn.setText("获取验证码");
-					btn.setClickable(true);
-					Timer timer = safetimer.get();
-					if (timer != null) {
-						timer.cancel();
-						ConcurrentHashMap<Button, Timer> mtimers = timers.get();
-						if (mtimers != null) {
-							mtimers.remove(btn);
-						}
-					}
-				}
-			}
-		}
+        synchronized (countModels) {
+            //移除掉btn已经被销毁的或者是当前的按钮
+            for (int s = 0; s < countModels.size(); s++) {
+                Button button = countModels.get(s).safebtn.get();
+                if (button == btn) {
+                    countModels.get(s).timer.cancel();
+                    countModels.remove(s);
+                    s--;
+                }
+            }
+            //设置不可点击
+            btn.setEnabled(false);
+            //创建timer
+            Timer timer = new Timer(true);
+            //创建handler
+            BtnHandler handleVerif = new BtnHandler(btn, timer, endStr);
+            //添加到列表中
+            countModels.add(handleVerif);
+            //开始执行
+            timer.schedule(new LTimerTask(time, handleVerif), 1000, 1000);
+        }
+    }
 
-	}
+    /********************
+     * 使用弱引用优化后的handler
+     *
+     * @author lijunlin
+     *
+     ********************/
+    class BtnHandler extends Handler {
 
-	/********
-	 * timertask
-	 * 
-	 * @author 李俊霖
-	 * 
-	 */
-	class LTimerTask extends TimerTask {
-		private int timeCount;
-		private Handler handler;
+        private WeakReference<Button> safebtn;
+        private Timer timer;
+        private String endStr;
 
-		public LTimerTask(int time, Handler handler) {
-			this.timeCount = time;
-			this.handler = handler;
-		}
+        BtnHandler(Button btn,
+                   Timer timer,
+                   String endStr) {
+            this.safebtn = new WeakReference<Button>(btn);
+            this.timer = timer;
+            this.endStr = endStr;
+        }
 
-		@Override
-		public void run() {
-			timeCount--;
-			Message msg = handler.obtainMessage(0, timeCount);
-			handler.sendMessage(msg);
-		}
+        public void handleMessage(Message msg) {
+            //时间
+            int timeCount = (Integer) msg.obj;
+            //获取按钮
+            Button btn = safebtn.get();
+            //不为空
+            if (btn != null) {
+                //设置时间
+                btn.setText(fromat.replace("@", Integer.toString(timeCount)));
+                //小于零
+                if (timeCount <= 0) {
+                    //设置endStr
+                    btn.setText(endStr);
+                    //可点击
+                    btn.setEnabled(true);
+                    //取消timer
+                    timer.cancel();
+                    //移除这个Handler
+                    synchronized (countModels) {
+                        countModels.remove(this);
+                    }
+                }
+            }
+        }
 
-	}
+    }
+
+    /********
+     * timertask
+     *
+     * @author 李俊霖
+     *
+     */
+    class LTimerTask extends TimerTask {
+        private int timeCount;
+        private Handler handler;
+
+        public LTimerTask(int time, Handler handler) {
+            this.timeCount = time;
+            this.handler = handler;
+        }
+
+        @Override
+        public void run() {
+            timeCount--;
+            Message msg = handler.obtainMessage(0, timeCount);
+            handler.sendMessage(msg);
+        }
+
+    }
 
 }
