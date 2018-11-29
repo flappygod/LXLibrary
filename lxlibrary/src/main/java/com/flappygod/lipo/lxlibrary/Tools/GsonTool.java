@@ -25,7 +25,7 @@ public class GsonTool {
      * @param str 数组字符串
      * @return
      */
-    public static List<String> jsonArrayStrToList(String str) {
+    public static List<String> listJsonArrayStr(String str) {
         try {
             JSONArray array = new JSONArray(str);
             List<String> strs = new ArrayList<>();
@@ -44,7 +44,7 @@ public class GsonTool {
      * @param strs  list字符串
      * @return
      */
-    public static String listStrToJsonArray(List<String> strs) {
+    public static String jsonArrayListStr(List<String> strs) {
         JSONArray array = new JSONArray();
         for (int s = 0; s < strs.size(); s++) {
             array.put(strs.get(s));
@@ -61,7 +61,7 @@ public class GsonTool {
      * @param <T>       泛型
      * @return
      */
-    public static <T> List jsonArrayToListModels(JSONArray jsonArray, Class<T> cls) {
+    public static <T> List jsonArrayToModels(JSONArray jsonArray, Class<T> cls) {
         try {
             if (gson == null) {
                 gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
@@ -86,12 +86,12 @@ public class GsonTool {
      * @param <T>       泛型
      * @return
      */
-    public static <T> List jsonArrayToListModels(String jsonArray, Class<T> cls) {
+    public static <T> List jsonArrayToModels(String jsonArray, Class<T> cls) {
         try {
             if (gson == null) {
                 gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
             }
-            JSONArray array=new JSONArray(jsonArray);
+            JSONArray array = new JSONArray(jsonArray);
             List rs = new ArrayList();
             for (int s = 0; s < array.length(); s++) {
                 T t = gson.fromJson(array.getJSONObject(s).toString(), cls);
@@ -115,7 +115,7 @@ public class GsonTool {
      */
     public static <T> T jsonObjectToModel(JSONObject jsonObject, Class<T> cls) {
         if (gson == null) {
-            gson =  new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+            gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         }
 
         T t = gson.fromJson(jsonObject.toString(), cls);
@@ -155,12 +155,19 @@ public class GsonTool {
         return json;
     }
 
-    public static <T> String listModelToString(List<T> t, Class<T> cls) {
+    /**************
+     * 将列表对象转换为字符串
+     * @param t  对象列表
+     * @param cls  class
+     * @param <T>  fanxing
+     * @return
+     */
+    public static <T> String modelToString(List<T> t, Class<T> cls) {
         if (gson == null) {
             gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         }
-        JSONArray array=new JSONArray();
-        for(int s=0;s<t.size();s++){
+        JSONArray array = new JSONArray();
+        for (int s = 0; s < t.size(); s++) {
             try {
                 array.put(new JSONObject(gson.toJson(t.get(s), cls)));
             } catch (JSONException e) {
@@ -171,23 +178,11 @@ public class GsonTool {
     }
 
 
-    public static <T> JSONArray listModelToJSONArray(List<T> t, Class<T> cls) {
-        if (gson == null) {
-            gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-        }
-        JSONArray array=new JSONArray();
-        for(int s=0;s<t.size();s++){
-            try {
-                array.put(new JSONObject(gson.toJson(t.get(s), cls)));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return array;
+    public static <A, B> List<B> listA2B(List<A> data, Class<A> aclass, Class<B> bClass) {
+        return jsonArrayToModels(modelToString(data, aclass), bClass);
     }
 
-
-    public static <B> B modelFromModel(Object modelA, Class<B> bClass) {
+    public static <B> B modelA2B(Object modelA, Class<B> bClass) {
         if (gson == null) {
             gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         }
