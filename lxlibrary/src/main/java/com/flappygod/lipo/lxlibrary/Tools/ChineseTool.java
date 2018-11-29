@@ -15,52 +15,49 @@ public class ChineseTool {
 	 * 
 	 * 返回首字母
 	 * 
-	 * @param strChinese
-	 * 
-	 * @param bUpCase
+	 * @param strChinese  中文字符串
+	 *
+	 * @param bUpCase     是否转换为大写
 	 * 
 	 * @return
 	 */
 
-	public static String getPYIndexStr(String strChinese, boolean bUpCase) {
-		try {
-			StringBuffer buffer = new StringBuffer();
-			byte b[] = strChinese.getBytes("GBK");// 把中文转化成byte数组
-			for (int i = 0; i < b.length; i++) {
-				if ((b[i] & 255) > 128) {
-					int char1 = b[i++] & 255;
-					char1 <<= 8;// 左移运算符用“<<”表示，是将运算符左边的对象，向左移动运算符右边指定的位数，并且在低位补零。其实，向左移n位，就相当于乘上2的n次方
-					int chart = char1 + (b[i] & 255);
-					buffer.append(getPYIndexChar((char) chart, bUpCase));
-					continue;
-				}
-				char c = (char) b[i];
-				if (!Character.isJavaIdentifierPart(c))// 确定指定字符是否可以是 Java 标识符中首字符以外的部分。
-					c = 'A';
-				buffer.append(c);
+	public static String getChineseIndexStr(String strChinese, boolean bUpCase) throws Exception{
+		StringBuffer buffer = new StringBuffer();
+		// 把中文转化成byte数组
+		byte b[] = strChinese.getBytes("GBK");
+		for (int i = 0; i < b.length; i++) {
+			if ((b[i] & 255) > 128) {
+				int char1 = b[i++] & 255;
+				// 左移运算符用“<<”表示，是将运算符左边的对象，向左移动运算符右边指定的位数，并且在低位补零。其实，向左移n位，就相当于乘上2的n次方
+				char1 <<= 8;
+				int chart = char1 + (b[i] & 255);
+				buffer.append(getPYIndexChar((char) chart, bUpCase));
+				continue;
 			}
-			return buffer.toString();
-		} catch (Exception e) {
-			System.out.println((new StringBuilder()).append("\u53D6\u4E2D\u6587\u62FC\u97F3\u6709\u9519")
-					.append(e.getMessage()).toString());
+			char c = (char) b[i];
+			// 确定指定字符是否可以是 Java 标识符中首字符以外的部分。
+			if (!Character.isJavaIdentifierPart(c))
+				c = 'A';
+			buffer.append(c);
 		}
-		return null;
+		return buffer.toString();
 
 	}
 	/*****************************
 	 * 
 	 * 返回首字母
 	 * 
-	 * @param strChinese
+	 * @param strChinese 中文字符串
 	 * 
-	 * @param bUpCase
+	 * @param bUpCase    是否转换为大写
 	 * 
 	 * @return
 	 */
 
 	
-	public static String getPYFirstChar(String strChinese, boolean bUpCase){
-		String str=getPYIndexStr(strChinese,bUpCase);
+	public static String getChineseFirstChar(String strChinese, boolean bUpCase)throws Exception{
+		String str= getChineseIndexStr(strChinese,bUpCase);
 		if (str != null && str.length() > 0) {
 			return str.substring(0, 1);
 		}
