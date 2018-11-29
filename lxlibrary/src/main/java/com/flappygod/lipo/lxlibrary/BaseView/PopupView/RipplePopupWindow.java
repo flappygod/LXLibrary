@@ -10,37 +10,37 @@ import android.view.ViewAnimationUtils;
 /**
  * Created by yang on 2016/8/30.
  */
-public class BaseRipplePopWindow extends BasepopupWindow {
+public class RipplePopupWindow extends BasePopupWindow {
 
-    public BaseRipplePopWindow(Context context) {
+    public RipplePopupWindow(Context context) {
         super(context);
     }
 
-    public BaseRipplePopWindow(Context context, AttributeSet attrs) {
+    public RipplePopupWindow(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BaseRipplePopWindow(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RipplePopupWindow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public BaseRipplePopWindow(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public RipplePopupWindow(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public BaseRipplePopWindow(View contentView) {
+    public RipplePopupWindow(View contentView) {
         super(contentView);
     }
 
-    public BaseRipplePopWindow(int width, int height) {
+    public RipplePopupWindow(int width, int height) {
         super(width, height);
     }
 
-    public BaseRipplePopWindow(View contentView, int width, int height) {
+    public RipplePopupWindow(View contentView, int width, int height) {
         super(contentView, width, height);
     }
 
-    public BaseRipplePopWindow(View contentView, int width, int height, boolean focusable) {
+    public RipplePopupWindow(View contentView, int width, int height, boolean focusable) {
         super(contentView, width, height, focusable);
     }
 
@@ -63,7 +63,7 @@ public class BaseRipplePopWindow extends BasepopupWindow {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    BaseRipplePopWindow.super.dismiss();
+                    RipplePopupWindow.super.dismiss();
                 }
 
                 @Override
@@ -76,7 +76,7 @@ public class BaseRipplePopWindow extends BasepopupWindow {
             });
             anim.start();
         }else{
-            BaseRipplePopWindow.super.dismiss();
+            RipplePopupWindow.super.dismiss();
         }
     }
 
