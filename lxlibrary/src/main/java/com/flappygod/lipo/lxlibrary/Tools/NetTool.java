@@ -280,35 +280,6 @@ public class NetTool {
     }
 
 
-    /******************************
-     * 获取当前的ip地址
-     * @return
-     */
-    public static String getIPAddress() throws Exception {
-        HttpURLConnection httpConnection = null;
-        URL infoUrl = new URL("http://1212.ip138.com/ic.asp");
-        URLConnection connection = infoUrl.openConnection();
-        httpConnection = (HttpURLConnection) connection;
-        int responseCode = httpConnection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            InputStream inStream = httpConnection.getInputStream();
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(inStream, "utf-8"));
-            StringBuilder strber = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null)
-                strber.append(line + "\n");
-            Pattern pattern = Pattern
-                    .compile("((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))");
-            Matcher matcher = pattern.matcher(strber.toString());
-            if (matcher.find()) {
-                String ipLine = matcher.group();
-                return ipLine;
-            }
-        }
-        return null;
-    }
-
 
     public static String getLocalIpAddress(Context context) {
         NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
