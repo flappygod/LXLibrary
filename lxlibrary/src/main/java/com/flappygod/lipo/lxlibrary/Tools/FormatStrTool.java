@@ -61,7 +61,6 @@ public class FormatStrTool {
      */
     public static BigDecimal parseDecimal(String str) {
         try {
-
             return new BigDecimal(str);
         }catch (Exception ex){
             return new BigDecimal(0);
