@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 import com.flappygod.lipo.lxlibrary.Tools.ScreenTool;
@@ -27,24 +26,32 @@ import java.util.List;
  * @author lijunlin
  */
 public class BaseFragment extends Fragment {
+
 	//我的activity
-	protected Activity  myActivity;
+	private Activity safeActivity;
+
+
 	//弹出层
-	private Toast myToast;
+	private Toast fragmentToast;
 	//进度等待条
-	private ProgressbarDialog progressDialog;
+	private ProgressbarDialog fragmentProgressDialog;
+
 
 	@SuppressLint("ShowToast")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//保存activity
-		myActivity=getActivity();
+		safeActivity =getActivity();
 		//保存toast
-		myToast = Toast.makeText(this.getActivity(), "",Toast.LENGTH_SHORT);
+		fragmentToast = Toast.makeText(this.getActivity(), "",Toast.LENGTH_SHORT);
 		//dialog
-		progressDialog = ProgressbarDialog.createDialog(this.getActivity());
+		fragmentProgressDialog = ProgressbarDialog.createDialog(this.getActivity());
 	}
+
+
+
+
 
 	/***
 	 * 显示转圈的dialog
@@ -54,9 +61,9 @@ public class BaseFragment extends Fragment {
 	 * @throws
 	 */
 	public void showProgressbarDialog(boolean b) {
-		if (progressDialog != null) {
-			progressDialog.setCancelable(b);
-			progressDialog.show();
+		if (fragmentProgressDialog != null) {
+			fragmentProgressDialog.setCancelable(b);
+			fragmentProgressDialog.show();
 		}
 	}
 
@@ -66,10 +73,11 @@ public class BaseFragment extends Fragment {
 	 * @throws
 	 ******/
 	public void dissMissProgressbarDialog() {
-		if (progressDialog != null && progressDialog.isShowing()) {
-			progressDialog.dismiss();
+		if (fragmentProgressDialog != null && fragmentProgressDialog.isShowing()) {
+			fragmentProgressDialog.dismiss();
 		}
 	}
+
 
 	/*****************
 	 * 显示一个吐丝
@@ -78,9 +86,9 @@ public class BaseFragment extends Fragment {
 	 *            需要显示的文字
 	 */
 	public void showMsg(String msg) {
-		myToast.setText(msg);
-		myToast.setDuration(Toast.LENGTH_SHORT);
-		myToast.show();
+		fragmentToast.setText(msg);
+		fragmentToast.setDuration(Toast.LENGTH_SHORT);
+		fragmentToast.show();
 	}
 
 
@@ -90,28 +98,27 @@ public class BaseFragment extends Fragment {
 	 * @return
 	 */
 	public int getScreenWidth() {
-		return ScreenTool.getScreenWidth(myActivity);
+		return ScreenTool.getScreenWidth(safeActivity);
 	}
 
 	/**************
 	 * 获取屏幕高度
-	 *
 	 * @return
 	 */
 	public int getScreenHeight() {
-		return ScreenTool.getScreenHeight(myActivity);
+		return ScreenTool.getScreenHeight(safeActivity);
 	}
 
 	//获取activity
-	public Activity getMyActivity(){
-		return myActivity;
+	public Activity getSafeActivity(){
+		return safeActivity;
 	}
 
 
 	//获取上下文
 	public Context getContext(){
-		if(myActivity!=null){
-			return myActivity;
+		if(safeActivity !=null){
+			return safeActivity;
 		}
 		return getContext();
 	}
@@ -121,8 +128,11 @@ public class BaseFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 		//处理fragment中的跳转返回
 		FragmentManager fragmentManager = getChildFragmentManager();
+		//fragments
 		List<Fragment> fragments = fragmentManager.getFragments();
+		//遍历
 		if (fragments != null) {
+			//主动调用
 			for (int s = 0; s < fragments.size(); s++) {
 				fragments.get(s).onActivityResult(requestCode, resultCode, data);
 			}
