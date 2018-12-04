@@ -116,16 +116,16 @@ public class JSONTool {
      * @param hash hashMap
      * @return
      */
-    public static JSONObject LinkedMapMapToJson(LinkedTreeMap hash) {
+    public static JSONObject LinkedMapToJson(LinkedTreeMap hash) {
         JSONObject jb = new JSONObject();
         try {
             Iterator<String> keys = hash.keySet().iterator();
             while (keys.hasNext()) {
                 String key = keys.next();
                 if (hash.get(key) instanceof HashMap) {
-                    jb.put(key, HashMapMapToJson((HashMap) hash.get(key)));
+                    jb.put(key, HashMapToJson((HashMap) hash.get(key)));
                 } else if (hash.get(key) instanceof LinkedTreeMap) {
-                    jb.put(key, LinkedMapMapToJson((LinkedTreeMap) hash.get(key)));
+                    jb.put(key, LinkedMapToJson((LinkedTreeMap) hash.get(key)));
                 } else if (hash.get(key) instanceof ArrayList) {
                     JSONArray array = ArrayListToJson((ArrayList) hash.get(key));
                     jb.put(key, array);
@@ -145,16 +145,16 @@ public class JSONTool {
      * @param hash
      * @return
      */
-    public static JSONObject HashMapMapToJson(HashMap hash) {
+    public static JSONObject HashMapToJson(HashMap hash) {
         JSONObject jb = new JSONObject();
         try {
             Iterator<String> keys = hash.keySet().iterator();
             while (keys.hasNext()) {
                 String key = keys.next();
                 if (hash.get(key) instanceof HashMap) {
-                    jb.put(key, HashMapMapToJson((HashMap) hash.get(key)));
+                    jb.put(key, HashMapToJson((HashMap) hash.get(key)));
                 } else if (hash.get(key) instanceof LinkedTreeMap) {
-                    jb.put(key, LinkedMapMapToJson((LinkedTreeMap) hash.get(key)));
+                    jb.put(key, LinkedMapToJson((LinkedTreeMap) hash.get(key)));
                 } else if (hash.get(key) instanceof ArrayList) {
                     JSONArray array = ArrayListToJson((ArrayList) hash.get(key));
                     jb.put(key, array);
@@ -179,7 +179,7 @@ public class JSONTool {
         JSONArray array = new JSONArray();
         for (int s = 0; s < datalist.size(); s++) {
             if (datalist.get(s) instanceof LinkedTreeMap) {
-                array.put(LinkedMapMapToJson((LinkedTreeMap) datalist.get(s)));
+                array.put(LinkedMapToJson((LinkedTreeMap) datalist.get(s)));
             } else if (datalist.get(s) instanceof ArrayList) {
                 array.put(ArrayListToJson((ArrayList) datalist.get(s)));
             } else {
