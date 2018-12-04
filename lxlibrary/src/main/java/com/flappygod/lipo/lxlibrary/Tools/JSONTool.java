@@ -28,10 +28,10 @@ public class JSONTool {
 
     /****************
      * 转换对象为JSON
-     * @param object
+     * @param object 对象
      * @return
      */
-    public static String ModelToJson(Object object){
+    public static String ModelToJson(Object object) {
         //装换
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
         return gson.toJson(object);
@@ -41,7 +41,7 @@ public class JSONTool {
     /*************
      * JOSN转换为hashmap
      *
-     * @param Str
+     * @param Str json字符串
      * @return
      * @throws
      */
@@ -56,9 +56,8 @@ public class JSONTool {
                 map.put(key, jb.getString(key));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
-
         return map;
 
     }
@@ -66,7 +65,7 @@ public class JSONTool {
     /****************
      * 获取这个JSON中的所有value值
      *
-     * @param str
+     * @param str  json字符串
      * @return
      * @throws
      */
@@ -81,7 +80,7 @@ public class JSONTool {
                 ret.add(jb.getString(key));
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         return ret;
@@ -91,7 +90,7 @@ public class JSONTool {
     /************
      * 获取这个JSON中的所有key值
      *
-     * @param str
+     * @param str  json字符串
      * @return
      * @throws
      */
@@ -106,7 +105,7 @@ public class JSONTool {
                 ret.add(key);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
         return ret;
@@ -117,43 +116,78 @@ public class JSONTool {
      * @param hash hashMap
      * @return
      */
-    public static JSONObject HashMapToJson(LinkedTreeMap hash) {
+    public static JSONObject LinkedMapMapToJson(LinkedTreeMap hash) {
         JSONObject jb = new JSONObject();
         try {
             Iterator<String> keys = hash.keySet().iterator();
             while (keys.hasNext()) {
-                String key = (String) keys.next();
-                if(hash.get(key) instanceof LinkedTreeMap){
-                    jb.put(key, HashMapToJson((LinkedTreeMap) hash.get(key)));
-                }else if(hash.get(key) instanceof ArrayList){
-                    JSONArray array=ArrayListToJson((ArrayList) hash.get(key));
+                String key = keys.next();
+                if (hash.get(key) instanceof HashMap) {
+                    jb.put(key, HashMapMapToJson((HashMap) hash.get(key)));
+                } else if (hash.get(key) instanceof LinkedTreeMap) {
+                    jb.put(key, LinkedMapMapToJson((LinkedTreeMap) hash.get(key)));
+                } else if (hash.get(key) instanceof ArrayList) {
+                    JSONArray array = ArrayListToJson((ArrayList) hash.get(key));
                     jb.put(key, array);
-                }else{
+                } else {
                     jb.put(key, hash.get(key));
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return jb;
     }
 
 
-    private static JSONArray ArrayListToJson(ArrayList list){
-        List datalist=(ArrayList)list;
-        JSONArray array=new JSONArray();
-        for(int s=0;s<datalist.size();s++){
-            if(datalist.get(s) instanceof LinkedTreeMap){
-                array.put(HashMapToJson((LinkedTreeMap) datalist.get(s)));
-            }else if(datalist.get(s) instanceof ArrayList){
+    /*************
+     * hashMap转换为JSon对象
+     * @param hash
+     * @return
+     */
+    public static JSONObject HashMapMapToJson(HashMap hash) {
+        JSONObject jb = new JSONObject();
+        try {
+            Iterator<String> keys = hash.keySet().iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (hash.get(key) instanceof HashMap) {
+                    jb.put(key, HashMapMapToJson((HashMap) hash.get(key)));
+                } else if (hash.get(key) instanceof LinkedTreeMap) {
+                    jb.put(key, LinkedMapMapToJson((LinkedTreeMap) hash.get(key)));
+                } else if (hash.get(key) instanceof ArrayList) {
+                    JSONArray array = ArrayListToJson((ArrayList) hash.get(key));
+                    jb.put(key, array);
+                } else {
+                    jb.put(key, hash.get(key));
+                }
+            }
+        } catch (JSONException e) {
+            System.out.println(e.getMessage());
+        }
+        return jb;
+    }
+
+
+    /********
+     * 列表转换为jsonArray
+     * @param list
+     * @return
+     */
+    private static JSONArray ArrayListToJson(ArrayList list) {
+        List datalist = (ArrayList) list;
+        JSONArray array = new JSONArray();
+        for (int s = 0; s < datalist.size(); s++) {
+            if (datalist.get(s) instanceof LinkedTreeMap) {
+                array.put(LinkedMapMapToJson((LinkedTreeMap) datalist.get(s)));
+            } else if (datalist.get(s) instanceof ArrayList) {
                 array.put(ArrayListToJson((ArrayList) datalist.get(s)));
-            }else{
+            } else {
                 array.put(datalist.get(s));
             }
         }
         return array;
     }
-
 
 
     /****************
@@ -167,7 +201,6 @@ public class JSONTool {
         try {
             return new JSONObject(str);
         } catch (JSONException e) {
-            e.printStackTrace();
             return null;
         }
     }
