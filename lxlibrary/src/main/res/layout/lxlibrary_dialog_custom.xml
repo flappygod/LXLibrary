@@ -6,10 +6,8 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/d_300"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/d_20"
-        android:layout_marginRight="@dimen/d_20"
         android:background="@drawable/lxlibrary_corner_white_tran"
         android:orientation="vertical">
 
