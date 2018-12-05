@@ -22,7 +22,8 @@ import com.flappygod.lipo.lxlibrary.Tools.DensityTool;
  *
  * @author lijunlin
  */
-public class CustomEditText extends android.support.v7.widget.AppCompatEditText {
+@SuppressLint("AppCompatCustomView")
+public class CustomEditText extends EditText {
 
     private int CROSS_COLOR = 0xFFFFFFFF;
     private int CIRCLE_COLOR = 0x66000000;
