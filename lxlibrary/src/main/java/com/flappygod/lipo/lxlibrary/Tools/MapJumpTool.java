@@ -147,7 +147,7 @@ public class MapJumpTool {
             try {
                 String uri = String.format("baidumap://map/direction?origin=%s,%s&destination=" +
                                 "%s,%s&mode=driving&src=com.flappygod.lipo", slat, slon,
-                        dlat, dAddress);
+                        dlat, dlon);
                 Intent intent = new Intent();
                 intent.setData(Uri.parse(uri));
                 context.startActivity(intent);
