@@ -46,7 +46,7 @@ public class DateTimeTool {
             try {
                 String ret = str;
                 if (ret.contains(".")) {
-                    ret = ret.split(".")[0];
+                    ret = ret.split("\\.")[0];
                 }
                 ret = ret.replace("T", " ").replace("/", "-");
                 Date date = df.parse(ret);
@@ -94,7 +94,7 @@ public class DateTimeTool {
             try {
                 String ret = str;
                 if (ret.contains(".")) {
-                    ret = ret.split(".")[0];
+                    ret = ret.split("\\.")[0];
                 }
                 ret = ret.replace("T", " ").replace("/", "-");
                 Date date = df.parse(ret);
@@ -122,7 +122,7 @@ public class DateTimeTool {
                 String ret = str;
                 //去掉后面的小数点
                 if (ret.contains(".")) {
-                    ret = ret.split(".")[0];
+                    ret = ret.split("\\.")[0];
                 }
                 ret = ret.replace("T", " ").replace("/", "-");
                 Date date = df.parse(ret);
