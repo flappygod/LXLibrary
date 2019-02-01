@@ -158,7 +158,7 @@ public class StringTool {
         List<String> rets=new ArrayList<>();
         if(str!=null&&split!=null){
             String[] strs=str.split(split);
-            for(int s=0;s<str.length();s++){
+            for(int s=0;s<strs.length;s++){
                 rets.add(strs[s]);
             }
         }
