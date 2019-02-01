@@ -1,5 +1,7 @@
 package com.flappygod.lipo.lxlibrary.Tools;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,5 +153,31 @@ public class StringTool {
         return str;
     }
 
+
+    public static List<String> splitStrList(String str, String split){
+        List<String> rets=new ArrayList<>();
+        if(str!=null&&split!=null){
+            String[] strs=str.split(split);
+            for(int s=0;s<str.length();s++){
+                rets.add(strs[s]);
+            }
+        }
+        return rets;
+    }
+
+    public static String strListToStr(List<String> strs,String split){
+        if(strs!=null&&split!=null){
+            String retStr="";
+            for(int s=0;s<strs.size();s++){
+                if(s==strs.size()-1){
+                    retStr=retStr+strs.get(s);
+                }else{
+                    retStr=retStr+strs.get(s)+split;
+                }
+            }
+            return retStr;
+        }
+        return null;
+    }
 
 }
