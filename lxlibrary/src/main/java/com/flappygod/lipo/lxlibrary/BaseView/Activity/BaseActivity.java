@@ -38,11 +38,10 @@ public class BaseActivity extends FragmentActivity {
 
     //是否被销毁
     protected boolean destoryed = false;
-
     // 吐司
-    private Toast activityToast;
+    protected Toast activityToast;
     // 等待dialog
-    private ProgressbarDialog activityProgressDialog;
+    protected ProgressbarDialog lxlibraryActivityProgress;
 
 
     //是否关闭页面
@@ -65,7 +64,7 @@ public class BaseActivity extends FragmentActivity {
         //吐司
         activityToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         //转圈等待
-        activityProgressDialog = ProgressbarDialog.createDialog(BaseActivity.this);
+        lxlibraryActivityProgress = ProgressbarDialog.createDialog(BaseActivity.this);
     }
 
     //进入
@@ -129,9 +128,9 @@ public class BaseActivity extends FragmentActivity {
      * @throws
      */
     public void showProgressbarDialog(boolean b) {
-        if (activityProgressDialog != null) {
-            activityProgressDialog.setCancelable(b);
-            activityProgressDialog.show();
+        if (lxlibraryActivityProgress != null) {
+            lxlibraryActivityProgress.setCancelable(b);
+            lxlibraryActivityProgress.show();
         }
     }
 
@@ -141,8 +140,8 @@ public class BaseActivity extends FragmentActivity {
      * @throws
      ******/
     public void dissMissProgressbarDialog() {
-        if (activityProgressDialog != null && activityProgressDialog.isShowing()) {
-            activityProgressDialog.dismiss();
+        if (lxlibraryActivityProgress != null && lxlibraryActivityProgress.isShowing()) {
+            lxlibraryActivityProgress.dismiss();
         }
     }
 

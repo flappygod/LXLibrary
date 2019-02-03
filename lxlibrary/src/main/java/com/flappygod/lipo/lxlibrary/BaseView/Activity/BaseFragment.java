@@ -29,12 +29,10 @@ public class BaseFragment extends Fragment {
 
 	//我的activity
 	private Activity safeActivity;
-
-
 	//弹出层
-	private Toast fragmentToast;
+	protected Toast lxlibraryFragmentToast;
 	//进度等待条
-	private ProgressbarDialog fragmentProgressDialog;
+	protected ProgressbarDialog lxlibraryFragmentProgress;
 
 
 	@SuppressLint("ShowToast")
@@ -44,9 +42,9 @@ public class BaseFragment extends Fragment {
 		//保存activity
 		safeActivity =getActivity();
 		//保存toast
-		fragmentToast = Toast.makeText(this.getActivity(), "",Toast.LENGTH_SHORT);
+		lxlibraryFragmentToast = Toast.makeText(this.getActivity(), "",Toast.LENGTH_SHORT);
 		//dialog
-		fragmentProgressDialog = ProgressbarDialog.createDialog(this.getActivity());
+		lxlibraryFragmentProgress = ProgressbarDialog.createDialog(this.getActivity());
 	}
 
 
@@ -61,9 +59,9 @@ public class BaseFragment extends Fragment {
 	 * @throws
 	 */
 	public void showProgressbarDialog(boolean b) {
-		if (fragmentProgressDialog != null) {
-			fragmentProgressDialog.setCancelable(b);
-			fragmentProgressDialog.show();
+		if (lxlibraryFragmentProgress != null) {
+			lxlibraryFragmentProgress.setCancelable(b);
+			lxlibraryFragmentProgress.show();
 		}
 	}
 
@@ -73,8 +71,8 @@ public class BaseFragment extends Fragment {
 	 * @throws
 	 ******/
 	public void dissMissProgressbarDialog() {
-		if (fragmentProgressDialog != null && fragmentProgressDialog.isShowing()) {
-			fragmentProgressDialog.dismiss();
+		if (lxlibraryFragmentProgress != null && lxlibraryFragmentProgress.isShowing()) {
+			lxlibraryFragmentProgress.dismiss();
 		}
 	}
 
@@ -86,9 +84,9 @@ public class BaseFragment extends Fragment {
 	 *            需要显示的文字
 	 */
 	public void showMsg(String msg) {
-		fragmentToast.setText(msg);
-		fragmentToast.setDuration(Toast.LENGTH_SHORT);
-		fragmentToast.show();
+		lxlibraryFragmentToast.setText(msg);
+		lxlibraryFragmentToast.setDuration(Toast.LENGTH_SHORT);
+		lxlibraryFragmentToast.show();
 	}
 
 

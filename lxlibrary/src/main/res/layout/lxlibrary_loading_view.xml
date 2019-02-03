@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/lxlibrary_dialog_prgress_bar"
-        android:layout_width="@dimen/d_35"
-        android:layout_height="@dimen/d_35"
-        app:indicatorName="BallPulseIndicator"
-        />
-
-    <!--<TextView
-        android:id="@+id/lxlibrary_loading_text"
-        android:layout_width="@dimen/d_35"
+        android:layout_width="@dimen/d_40"
+        android:layout_height="@dimen/d_40"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:textSize="@dimen/s_9"
-        android:gravity="center"
-        android:text="IEO"
-        android:layout_height="@dimen/d_35"/>-->
+        app:indicatorName="BallClipRotatePulseIndicator"
+        app:indicatorColor="#1bafbc"
+        />
 
-</RelativeLayout>
+</LinearLayout>

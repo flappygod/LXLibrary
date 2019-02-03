@@ -18,9 +18,9 @@
 
         <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/lxlibrary_dialog_prgress_bar"
-            android:layout_width="@dimen/d_35"
-            android:layout_height="@dimen/d_35"
-            app:indicatorName="BallPulseIndicator"
+            android:layout_width="@dimen/d_40"
+            android:layout_height="@dimen/d_40"
+            app:indicatorName="BallClipRotatePulseIndicator"
             />
        <!-- <ProgressBar
             style="@style/Base.Widget.AppCompat.ProgressBar"
@@ -44,7 +44,7 @@
                 android:singleLine="true"
                 android:text="@string/lxlibrary_loading"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/s_14" />
+                android:textSize="@dimen/s_12" />
 
         </LinearLayout>
     </LinearLayout>
