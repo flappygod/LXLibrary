@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.flappygod.lipo.lxlibrary.BaseView.Dialog.BaseDialog;
 import com.flappygod.lipo.lxlibrary.R;
+import com.wang.avi.AVLoadingIndicatorView;
 
 
 /**
@@ -27,7 +28,7 @@ public class ProgressbarDialog extends BaseDialog {
     //显示的文本提示
     private static TextView textView;
     //progress默认
-    private static ProgressBar prgress;
+    private static AVLoadingIndicatorView prgress;
 
     //构造器
     public ProgressbarDialog(Context context) {
@@ -62,7 +63,7 @@ public class ProgressbarDialog extends BaseDialog {
         myprogressbardialog.setContentView(R.layout.lxlibrary_dialog_progress);
         //找到控件
         textView = (TextView) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_progress_text);
-        prgress = (ProgressBar) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_prgress_bar);
+        prgress = (AVLoadingIndicatorView) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_prgress_bar);
 
         //设置gravity
         myprogressbardialog.getWindow().getAttributes().gravity = Gravity.CENTER;
@@ -81,7 +82,7 @@ public class ProgressbarDialog extends BaseDialog {
         myprogressbardialog = new ProgressbarDialog(context, R.style.lxlibrary_dialog_custom);
         myprogressbardialog.setContentView(R.layout.lxlibrary_dialog_progress);
         textView = (TextView) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_progress_text);
-        prgress = (ProgressBar) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_prgress_bar);
+        prgress = (AVLoadingIndicatorView) myprogressbardialog.findViewById(R.id.lxlibrary_dialog_prgress_bar);
         //第一种动画不显示
         myprogressbardialog.getWindow().getAttributes().gravity = Gravity.CENTER;
         myprogressbardialog.getWindow().getAttributes().width = LayoutParams.MATCH_PARENT;

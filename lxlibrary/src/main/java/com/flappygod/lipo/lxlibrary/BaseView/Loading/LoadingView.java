@@ -13,12 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.flappygod.lipo.lxlibrary.R;
+import com.wang.avi.AVLoadingIndicatorView;
 
 
 public class LoadingView extends LinearLayout {
 
 
-    private TextView  textView;
+    private AVLoadingIndicatorView progress;
 
 
 
@@ -50,18 +51,11 @@ public class LoadingView extends LinearLayout {
         //转圈lay
         View view= LayoutInflater.from(getContext()).inflate(R.layout.lxlibrary_loading_view,null);
         //获取控件
-        textView=view.findViewById(R.id.lxlibrary_loading_text);
+        progress=view.findViewById(R.id.lxlibrary_dialog_prgress_bar);
         //添加View
         addView(view,new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public void setText(CharSequence text){
-        textView.setText(text);
-    }
-
-    public TextView getTextView(){
-        return textView;
-    }
 
 
 }
