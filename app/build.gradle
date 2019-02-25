@@ -6,8 +6,8 @@ android {
         applicationId "com.flappygod.lipo.lxlibrary"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 24
-        versionName "2.4"
+        versionCode 25
+        versionName "2.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
