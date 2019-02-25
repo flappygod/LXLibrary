@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -50,6 +52,27 @@ public class CustomEditText extends EditText {
     //监听方便清理
     private ArrayList<TextWatcher> mListeners = null;
 
+    public CustomEditText(Context context) {
+        super(context);
+        init(context);
+    }
+
+    public CustomEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public CustomEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public CustomEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context);
+    }
+
     public boolean isShowDelete() {
         return showDelete;
     }
@@ -58,18 +81,7 @@ public class CustomEditText extends EditText {
         this.showDelete = showDelete;
     }
 
-    public CustomEditText(Context context) {
-        super(context);
-    }
 
-    public CustomEditText(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public CustomEditText(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
 
     private boolean drawDeleteFlag;
 
@@ -84,7 +96,9 @@ public class CustomEditText extends EditText {
         right = getPaddingRight();
         top = getPaddingTop();
         bottom = getPaddingBottom();
-
+        //清空
+        clearTextChangedListeners();
+        //添加
         addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
